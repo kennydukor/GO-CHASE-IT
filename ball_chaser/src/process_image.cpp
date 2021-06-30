@@ -34,49 +34,28 @@ void process_image_callback(const sensor_msgs::Image& img)
     	// Then, identify if this pixel falls in the left, mid, or right side of the image
     	// Depending on the white ball position, call the drive_bot function and pass velocities to it
     	// Request a stop when there's no white ball seen by the camera
-    	int white = 0;
-    	int ball_pos_x = 0;
-    	int ball_pos_y = 0;
-    	int image_size = img.data.size();
-	
-	// loop through number of pixels (unrolled)
-    	for(int i = 0; i+2<image_size; i+=3){
-		// Save pixel values for RGB channels
-		int red_channel = img.data[i];
-		int green_channel = img.data[i+1];
-		int blue_channel = img.data[i+2];
+     	bool found_ball = false;
+    	int column_index = 0;
 
-		if(red_channel == 255 && green_channel == 255 && blue_channel == 255)
+	for (int i=0; i < img.height * img.step; i += 3)
 		{
-			int x_pos =  (i % (img.width * 3))/3;
-			//int y_pos =  (i % (img.height * 3))/3;
-			ball_pos_x += x_pos;
-			//ball_pos_y += y_pos;
-			white += 1;
- 		}
-    	}
-    
-    	//Robot velocity control part
-    	if(white == 0)
-    	{
-		drive_robot(0.0, 0.0); 
-    	}
-   	 else
-    	{
-		int ball_pos = ball_pos_x / white;
-        	if (ball_pos < img.width / 3)
-        	{
-      			drive_robot(0.0, 0.5);
-    		}
-    		else if (ball_pos > img.width * 2 / 3)
-    		{
-      			drive_robot(0.0, -0.5);
-    		}
-    		else
-    		{
-      			drive_robot(0.5, 0.0);
-    		}
-    }
+			if ((img.data[i] == 255) && (img.data[i+1] == 255) && (img.data[i+2] == 255))
+				{
+				    column_index = i % img.step;
+
+				    if (column_index < img.step/3)
+					drive_robot(0.5, 1);
+				    else if (column_index < (img.step/3 * 2))
+					drive_robot(0.5, 0); 
+				    else
+					drive_robot(0.5, -1);
+				    found_ball = true;
+				    break;
+				 }
+		}
+
+	if (found_ball == false)
+		drive_robot(0, 0); 
 }
 
 int main(int argc, char** argv)
