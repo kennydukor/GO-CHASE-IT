@@ -29,8 +29,9 @@
 
 	<!-- Find my robot Description-->
 	<param name="robot_description" command="$(find xacro)/xacro --inorder '$(find go_chase_it)/urdf/robot.xacro'"/>
-	<!-- Spawn My Robot -->
+	
 
+	<!-- Spawn My Robot -->
 	<node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen" 
 	args="-urdf -param robot_description -model robot 
 		-x $(arg x) -y $(arg y) -z $(arg z) 
