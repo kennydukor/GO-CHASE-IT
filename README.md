@@ -4,7 +4,7 @@ Udacity Robotics Software Engineer Nanodegree Program [Project 2]
 
 Use ROS and Gazebo to build a mobile robot for chasing a white ball.
 
-<img src="screenshots/go_chase_it.gif" alt="demo" width="500" height="280"/></a>
+<img src="screenshots/go_chase_it.gif.gif" alt="demo" width="500" height="280"/></a>
 
 ## **Introduction**
   A wheeled robot that scans for a white ball in its environment and move navigates the target.
