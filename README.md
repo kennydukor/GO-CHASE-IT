@@ -4,7 +4,7 @@ Udacity Robotics Software Engineer Nanodegree Program [Project 2]
 
 Use ROS and Gazebo to build a mobile robot for chasing a white ball.
 
-<img src="screenshots/go_chase_it.gif.gif" alt="demo" width="500" height="280"/></a>
+<img src="screenshots/go_chase_it.gif.gif" alt="demo" width="600" height="376"/></a>
 
 ## **Introduction**
   A wheeled robot that scans for a white ball in its environment and move navigates the target.
@@ -34,18 +34,19 @@ ball_chaser ROS package holds our C++ nodes.
 
 ## Structure
 ```
-.RoboND-Go-Chase-It                # Go Chase It Project
-├── my_robot                       # my_robot package
+.GO-CHASE-IT              # Go Chase It Project
+├── go_chase_it                      # my_robot package
 │   ├── launch                     # launch folder for launch files
 │   │   ├── robot_description.launch
 │   │   ├── world.launch
 │   ├── meshes                     # meshes folder for sensors
 │   │   ├── hokuyo.dae
 │   ├── urdf                       # urdf folder for xarco files
-│   │   ├── my_robot.gazebo
-│   │   ├── my_robot.xacro
+│   │   ├── robot.gazebo
+│   │   ├── robot.xacro
+│   │   ├── materials.xacro
 │   ├── world                      # world folder for world files
-│   │   ├── UdacityOffice.world
+│   │   ├── robot_world.world
 │   ├── CMakeLists.txt             # compiler instructions
 │   ├── package.xml                # package info
 ├── ball_chaser                    # ball_chaser package
@@ -58,7 +59,7 @@ ball_chaser ROS package holds our C++ nodes.
 │   │   ├── DriveToTarget.srv
 │   ├── CMakeLists.txt             # compiler instructions
 │   ├── package.xml                # package info
-└──
+└── CMakeLists.txt
 ```
 **my_robot**: This package defines the world and the robot.
 
@@ -76,8 +77,8 @@ ball_chaser ROS package holds our C++ nodes.
 1. Clone and initialize project with a catkin workspace
 ```console
 $ mkdir catkin_ws && cd catkin_ws
-$ git clone https://github.com/huuanhhuynguyen/RoboND-Go-Chase-It.git
-$ mv RoboND-Go-Chase-It src
+$ git clone https://github.com/kennydukor/GO-CHASE-IT.git
+$ mv GO-CHASE-IT src
 $ cd src && catkin_init_workspace
 ```
 
@@ -90,7 +91,7 @@ $ catkin_make
 3. Launch the world
 ```
 $ source devel/setup.bash
-$ roslaunch my_robot world.launch
+$ roslaunch go_chase_it world.launch
 ```
 
 4. Open another terminal (Ctrl+Shift+T), and launch the `ball_chaser` package
