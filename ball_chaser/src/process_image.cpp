@@ -34,28 +34,46 @@ void process_image_callback(const sensor_msgs::Image& img)
     	// Then, identify if this pixel falls in the left, mid, or right side of the image
     	// Depending on the white ball position, call the drive_bot function and pass velocities to it
     	// Request a stop when there's no white ball seen by the camera
-     	bool found_ball = false;
-    	int column_index = 0;
 
-	for (int i=0; i < img.height * img.step; i += 3)
+	// Documentation for sensor_msgs/Image Message https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html
+	
+	int image_size = img.data.size();
+	enum Side : uint8_t {LEFT, MID, RIGHT, NO_BALL} side = NO_BALL;
+
+	for (int i=0; i < image_size; i += 3)
 		{
-			if ((img.data[i] == 255) && (img.data[i+1] == 255) && (img.data[i+2] == 255))
-				{
-				    column_index = i % img.step;
+			// Get colors from RGB
+			int red_channel = img.data[i];
+			int green_channel = img.data[i+1];
+			int blue_channel = img.data[i+2];
 
-				    if (column_index < img.step/3)
-					drive_robot(0.5, 1);
-				    else if (column_index < (img.step/3 * 2))
-					drive_robot(0.5, 0); 
-				    else
-					drive_robot(0.5, -1);
-				    found_ball = true;
-				    break;
+			if (red_channel == 255 && green_channel == 255 && blue_channel == 255)
+				{
+					auto col = i % img.step;
+					if (col < img.step * 0.4) {
+						side = LEFT;
+					} else if (col > img.step * 0.6) {
+						side = RIGHT;
+					} else {
+						side = MID;
+					}
+					break;
+					
 				 }
 		}
 
-	if (found_ball == false)
-		drive_robot(0, 0); 
+	// Drive robot towards the ball
+	if (side == LEFT) {
+		drive_robot(0.5, 1.0);
+	} else if (side == RIGHT) {
+		drive_robot(0.5, -1.0);
+	} else if (side == MID) {
+		drive_robot(0.5, 0.0);
+	} else /* NO_BALL */ {
+		drive_robot(0.0, 0.0);
+	}
+	
+
 }
 
 int main(int argc, char** argv)
