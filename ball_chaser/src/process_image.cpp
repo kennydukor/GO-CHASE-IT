@@ -38,7 +38,7 @@ void process_image_callback(const sensor_msgs::Image& img)
 	// Documentation for sensor_msgs/Image Message https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html
 	
 	int image_size = img.data.size();
-	enum Side : uint8_t {LEFT, MID, RIGHT, NO_BALL} side = NO_BALL;
+	enum Side : int {left, mid, right, no_ball} side = no_ball;
 
 	for (int i=0; i < image_size; i += 3)
 		{
@@ -51,11 +51,11 @@ void process_image_callback(const sensor_msgs::Image& img)
 				{
 					auto col = i % img.step;
 					if (col < img.step * 0.4) {
-						side = LEFT;
+						side = left;
 					} else if (col > img.step * 0.6) {
-						side = RIGHT;
+						side = right;
 					} else {
-						side = MID;
+						side = mid;
 					}
 					break;
 					
@@ -63,13 +63,13 @@ void process_image_callback(const sensor_msgs::Image& img)
 		}
 
 	// Drive robot towards the ball
-	if (side == LEFT) {
+	if (side == left) {
 		drive_robot(0.5, 1.0);
-	} else if (side == RIGHT) {
+	} else if (side == right) {
 		drive_robot(0.5, -1.0);
-	} else if (side == MID) {
+	} else if (side == mid) {
 		drive_robot(0.5, 0.0);
-	} else /* NO_BALL */ {
+	} else /* no_ball */ {
 		drive_robot(0.0, 0.0);
 	}
 	
