@@ -37,39 +37,41 @@ void process_image_callback(const sensor_msgs::Image& img)
 
 	// Documentation for sensor_msgs/Image Message https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html
 	
-	int image_size = img.data.size();
-	enum Side : int {left, mid, right, no_ball} side = no_ball;
+	auto img_sec_width = img.step / 3;
+	int img_unrolled = img.step * img.height;
+	int left_trace_cnt = 0;
+	int right_trace_cnt = 0;
+	int middle_trace_cnt = 0;
 
-	for (int i=0; i < image_size; i += 3)
+	//
+	for (int i=0; i < img_unrolled; i += 3)
+	{
+		// Get RGB colors
+		int red_channel = img.data[i];
+		int green_channel = img.data[i+1];
+		int blue_channel = img.data[i+2];
+
+		if (red_channel == white_pixel && green_channel == white_pixel && blue_channel == white_pixel)
 		{
-			// Get colors from RGB
-			int red_channel = img.data[i];
-			int green_channel = img.data[i+1];
-			int blue_channel = img.data[i+2];
-
-			if (red_channel == 255 && green_channel == 255 && blue_channel == 255)
-				{
-					auto col = i % img.step;
-					if (col < img.step * 0.4) {
-						side = left;
-					} else if (col > img.step * 0.6) {
-						side = right;
-					} else {
-						side = mid;
-					}
-					break;
-					
-				 }
+			// determine location of white image in sections (left, right, middle)
+			int section = i % img.step;
+			if (section < img_sec_width) {left_trace_cnt += 1; }
+			else if (section > img_sec_width && section < img_sec_width * 2) {middle_trace_cnt += 1; }
+			else {right_trace_cnt += 1; }
 		}
+	}
 
 	// Drive robot towards the ball
-	if (side == left) {
-		drive_robot(0.5, 1.0);
-	} else if (side == right) {
-		drive_robot(0.5, -1.0);
-	} else if (side == mid) {
-		drive_robot(0.5, 0.0);
-	} else /* no_ball */ {
+	if (left_trace_cnt > right_trace_cnt && left_trace_cnt > middle_trace_cnt) {
+		drive_robot(0.4, 0.1);
+	} 
+	else if (right_trace_cnt > left_trace_cnt && right_trace_cnt > middle_trace_cnt) {
+		drive_robot(0.4, -0.1);
+	} 
+	else if (middle_trace_cnt > right_trace_cnt && middle_trace_cnt > left_trace_cnt) {
+		drive_robot(0.4, 0.0);
+	} 
+	else /* no_ball */ {
 		drive_robot(0.0, 0.0);
 	}
 	
