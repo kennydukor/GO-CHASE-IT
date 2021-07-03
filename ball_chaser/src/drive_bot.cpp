@@ -36,7 +36,7 @@ bool handle_drive_request(ball_chaser::DriveToTarget::Request& req, ball_chaser:
 
 	
 	// Wait 3 sec for robot to move
-	ros::Duration(3).sleep();
+	// ros::Duration(3).sleep();
 
 	// Return response msg
 	res.msg_feedback = "Move command is set - linear_x: " + std::to_string(linear_x)

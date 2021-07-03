@@ -63,10 +63,10 @@ void process_image_callback(const sensor_msgs::Image& img)
 
 	// Drive robot towards the ball
 	if (left_trace_cnt > right_trace_cnt && left_trace_cnt > middle_trace_cnt) {
-		drive_robot(0.4, 0.1);
+		drive_robot(0.4, 0.15);
 	} 
 	else if (right_trace_cnt > left_trace_cnt && right_trace_cnt > middle_trace_cnt) {
-		drive_robot(0.4, -0.1);
+		drive_robot(0.4, -0.15);
 	} 
 	else if (middle_trace_cnt > right_trace_cnt && middle_trace_cnt > left_trace_cnt) {
 		drive_robot(0.4, 0.0);
