@@ -37,24 +37,23 @@ void process_image_callback(const sensor_msgs::Image& img)
 
 	// Documentation for sensor_msgs/Image Message https://docs.ros.org/en/melodic/api/sensor_msgs/html/msg/Image.html
 	
-	auto img_sec_width = img.step / 3;
-	int img_unrolled = img.step * img.height;
-	int left_trace_cnt = 0;
-	int right_trace_cnt = 0;
-	int middle_trace_cnt = 0;
+	auto img_sec_width = img.step / 3; // Divide img width (.step) to three part (left, right, middle)
+	int img_unrolled = img.step * img.height; // unrolled image pixel (img.step returns unrolled RGB)
+	int left_trace_cnt = 0; // number of white traces found in the left
+	int right_trace_cnt = 0; // number of white traces found in the right
+	int middle_trace_cnt = 0; // number of white traces found in the middle
 
-	//
-	for (int i=0; i < img_unrolled; i += 3)
+	
+	for (int i=0; i < img_unrolled; i += 3) // first three pixel is RGB, next three is next RGB 
 	{
 		// Get RGB colors
 		int red_channel = img.data[i];
 		int green_channel = img.data[i+1];
 		int blue_channel = img.data[i+2];
 
-		if (red_channel == white_pixel && green_channel == white_pixel && blue_channel == white_pixel)
-		{
+		if (red_channel == white_pixel && green_channel == white_pixel && blue_channel == white_pixel) {
 			// determine location of white image in sections (left, right, middle)
-			int section = i % img.step;
+			int section = i % img.step; // modulus return same value across the row wrt the width
 			if (section < img_sec_width) {left_trace_cnt += 1; }
 			else if (section > img_sec_width && section < img_sec_width * 2) {middle_trace_cnt += 1; }
 			else {right_trace_cnt += 1; }
@@ -63,15 +62,19 @@ void process_image_callback(const sensor_msgs::Image& img)
 
 	// Drive robot towards the ball
 	if (left_trace_cnt > right_trace_cnt && left_trace_cnt > middle_trace_cnt) {
+		// Drive to left
 		drive_robot(0.4, 0.15);
 	} 
 	else if (right_trace_cnt > left_trace_cnt && right_trace_cnt > middle_trace_cnt) {
+		// Drive to right		
 		drive_robot(0.4, -0.15);
 	} 
 	else if (middle_trace_cnt > right_trace_cnt && middle_trace_cnt > left_trace_cnt) {
+		// Drive to straight		
 		drive_robot(0.4, 0.0);
 	} 
-	else /* no_ball */ {
+	else {
+		// Drive to stop
 		drive_robot(0.0, 0.0);
 	}
 	
